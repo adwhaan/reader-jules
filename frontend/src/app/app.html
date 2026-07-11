@@ -1,0 +1,147 @@
+<div class="flex h-screen flex-col bg-paper dark:bg-ink text-ink dark:text-paper font-sans">
+  <!-- Masthead -->
+  <header class="border-b-4 border-double border-ink px-4 py-3 dark:border-paper sm:px-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="font-display text-2xl font-bold tracking-tight text-ink dark:text-paper sm:text-3xl">
+          The Local Wire
+        </h1>
+        <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint">
+          Your feeds, your device, your terms
+        </p>
+      </div>
+      <app-sync-status></app-sync-status>
+    </div>
+
+    <nav class="mt-3 flex gap-1 border-t border-hairline pt-2 text-sm">
+      <button
+        type="button"
+        class="rounded-t-md px-3 py-1.5 font-medium transition-colors"
+        [class.bg-moss-500]="activeView() === 'reader'"
+        [class.text-white]="activeView() === 'reader'"
+        [class.text-ink-muted]="activeView() !== 'reader'"
+        (click)="activeView.set('reader')"
+      >
+        Read
+      </button>
+      <button
+        type="button"
+        class="rounded-t-md px-3 py-1.5 font-medium transition-colors"
+        [class.bg-moss-500]="activeView() === 'add-feed'"
+        [class.text-white]="activeView() === 'add-feed'"
+        [class.text-ink-muted]="activeView() !== 'add-feed'"
+        (click)="activeView.set('add-feed')"
+      >
+        Add feed
+      </button>
+      <button
+        type="button"
+        class="rounded-t-md px-3 py-1.5 font-medium transition-colors"
+        [class.bg-moss-500]="activeView() === 'import-export'"
+        [class.text-white]="activeView() === 'import-export'"
+        [class.text-ink-muted]="activeView() !== 'import-export'"
+        (click)="activeView.set('import-export')"
+      >
+        Import &amp; export
+      </button>
+      <button
+        type="button"
+        class="rounded-t-md px-3 py-1.5 font-medium transition-colors"
+        [class.bg-moss-500]="activeView() === 'settings'"
+        [class.text-white]="activeView() === 'settings'"
+        [class.text-ink-muted]="activeView() !== 'settings'"
+        (click)="activeView.set('settings')"
+      >
+        Settings
+      </button>
+    </nav>
+  </header>
+
+  <!-- Body -->
+  <main class="flex-1 overflow-hidden">
+    @switch (activeView()) {
+      @case ('reader') {
+        <div class="flex h-full">
+          <!-- Feed tree -->
+          <div
+            class="w-full border-r border-hairline bg-surface md:flex md:w-64 md:flex-shrink-0"
+            [class.hidden]="mobilePane() !== 'tree'"
+          >
+            <app-feed-tree class="w-full"></app-feed-tree>
+          </div>
+
+          <!-- Article list -->
+          <div
+            class="w-full border-r border-hairline bg-surface md:flex md:w-96 md:flex-shrink-0"
+            [class.hidden]="mobilePane() !== 'list'"
+          >
+            <div class="flex w-full flex-col">
+              <button
+                type="button"
+                class="border-b border-hairline px-4 py-2 text-left text-xs font-medium text-ink-muted md:hidden"
+                (click)="backToTree()"
+              >
+                ← Feeds
+              </button>
+              <app-article-list class="flex-1 overflow-hidden"></app-article-list>
+            </div>
+          </div>
+
+          <!-- Article detail -->
+          <div class="w-full flex-1 bg-surface md:flex" [class.hidden]="mobilePane() !== 'detail'">
+            <div class="flex w-full flex-col">
+              <button
+                type="button"
+                class="border-b border-hairline px-4 py-2 text-left text-xs font-medium text-ink-muted md:hidden"
+                (click)="backToList()"
+              >
+                ← Articles
+              </button>
+              <app-article-detail class="flex-1 overflow-hidden"></app-article-detail>
+            </div>
+          </div>
+        </div>
+      }
+      @case ('add-feed') {
+        <div class="flex h-full flex-col">
+          <div class="flex gap-1 border-b border-hairline bg-surface px-4 pt-2">
+            <button
+              type="button"
+              class="rounded-t-md px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition-colors"
+              [class.bg-moss-50]="addFeedMode() === 'url'"
+              [class.text-moss-700]="addFeedMode() === 'url'"
+              [class.text-ink-muted]="addFeedMode() !== 'url'"
+              (click)="addFeedMode.set('url')"
+            >
+              By URL (RSS/Atom)
+            </button>
+            <button
+              type="button"
+              class="rounded-t-md px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition-colors"
+              [class.bg-moss-50]="addFeedMode() === 'selector'"
+              [class.text-moss-700]="addFeedMode() === 'selector'"
+              [class.text-ink-muted]="addFeedMode() !== 'selector'"
+              (click)="addFeedMode.set('selector')"
+            >
+              By selector
+            </button>
+          </div>
+
+          <div class="flex-1 overflow-hidden">
+            @if (addFeedMode() === 'url') {
+              <app-add-feed class="block h-full overflow-hidden"></app-add-feed>
+            } @else {
+              <app-selector-editor class="block h-full overflow-hidden"></app-selector-editor>
+            }
+          </div>
+        </div>
+      }
+      @case ('import-export') {
+        <app-import-export class="block h-full overflow-hidden"></app-import-export>
+      }
+      @case ('settings') {
+        <app-settings class="block h-full overflow-hidden"></app-settings>
+      }
+    }
+  </main>
+</div>
